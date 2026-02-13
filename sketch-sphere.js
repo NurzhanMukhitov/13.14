@@ -6,7 +6,8 @@ let points = [];
 const attraction = 0.01; // pulled back to their rotating home
 const damping = 0.9; // friction, keeps motion smooth
 const repel_strength = 28;
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+// Цифры 1, 3, 4 с взвешенным распределением (1 и 3 встречаются чаще)
+const digits = ["1", "1", "3", "3", "4"];
 let canvas;
 
 // Эталонные параметры дизайна (desktop)
@@ -105,7 +106,7 @@ function getInteractionPoint() {
 
 function setup() {
   describe(
-    "A rotating sphere-like cloud of white letters on a black background," +
+    "A rotating sphere-like cloud of white digits (1, 3, 4) on a black background," +
       " scatters and reforms when interacted with by the mouse or touch," +
       " creating a circular repulsion effect around the cursor."
   );
@@ -141,7 +142,7 @@ function setup() {
       index: i,
       pos: createVector(0, 0),
       vel: createVector(0, 0),
-      char: letters.charAt(Math.floor(Math.random() * letters.length)),
+      char: digits[Math.floor(Math.random() * digits.length)],
     });
   }
   // initiate them at angle = 0
@@ -149,21 +150,9 @@ function setup() {
   updateTargets();
   for (let p of points) p.vel.set(0, 0);
 
-  // Предотвращаем прокрутку страницы при касании канваса
-  if (canvas && canvas.elt) {
-    // Обработчики для touch событий
-    canvas.elt.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-    
-    canvas.elt.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-    
-    canvas.elt.addEventListener('touchend', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-  }
+  // Ранее здесь блокировалась прокрутка страницы при касании канваса
+  // через preventDefault на touch-событиях. Сейчас это убрано,
+  // чтобы вертикальные свайпы могли скроллить страницу до секции about.
 }
 
 function draw() {
@@ -204,7 +193,7 @@ function draw() {
     p.vel.mult(damping);
     p.pos.add(p.vel);
 
-    // вместо точки рисуем букву
+    // вместо точки рисуем цифру
     text(p.char, p.pos.x, p.pos.y);
   }
   angle += 0.01;

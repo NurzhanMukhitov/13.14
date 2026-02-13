@@ -1,3 +1,12 @@
+/* Inter Variable Font - локальный шрифт */
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -60,8 +69,11 @@ body {
 /* Visual Section - место для изображения */
 .visual {
   width: 100%;
-  min-height: 70vh;
+  min-height: 80vh;
   background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .visual-sketch {
@@ -76,7 +88,7 @@ body {
   display: block;
   /* Убираем max-width и height: auto — канвас отображается в натуральном размере */
   /* Добавляем touch-action для предотвращения прокрутки при касании */
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .visual-placeholder {
@@ -198,7 +210,7 @@ body {
   }
   
   .visual {
-    min-height: 50vh;
+    min-height: 80vh;
   }
   
   .visual-placeholder {
