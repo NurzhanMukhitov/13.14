@@ -10,6 +10,17 @@ const repel_strength = 28;
 const digits = ["1", "1", "3", "3", "4"];
 let canvas;
 
+// Текст "about", который будет появляться внутри сферы
+const aboutLines = [
+  "Digital visual artist",
+  "From generative systems to interactive environments",
+  "Code, motion, structure",
+  "Open to collaborations",
+];
+
+// Прозрачность текста: 0 — скрыт, 255 — полностью виден
+let revealAlpha = 0;
+
 // Эталонные параметры дизайна (desktop)
 const DESIGN_WIDTH = 900;
 const DESIGN_HEIGHT = 700;
@@ -162,6 +173,18 @@ function draw() {
   // Получаем точку взаимодействия (может быть null)
   let interactionPoint = getInteractionPoint();
 
+  // Плавное появление/исчезновение текста:
+  // чем ближе к центру сферы курсор/палец — тем сильнее проявляется текст
+  let targetAlpha = 0;
+  if (interactionPoint !== null) {
+    const distFromCenter = interactionPoint.mag();
+    const maxDist = radius_ * 0.9; // почти радиус сферы
+    const t = 1 - constrain(distFromCenter / maxDist, 0, 1); // 1 в центре, 0 у края
+    targetAlpha = 255 * t;
+  }
+  // Плавно тянем текущую прозрачность к целевой
+  revealAlpha = lerp(revealAlpha, targetAlpha, 0.1);
+
   for (let p of points) {
     let i = p.index;
 
@@ -197,6 +220,33 @@ function draw() {
     text(p.char, p.pos.x, p.pos.y);
   }
   angle += 0.01;
+
+  // Рисуем текст "about" в центре сферы поверх цифр
+  if (revealAlpha > 0) {
+    push();
+    textAlign(CENTER, CENTER);
+    // Нежный, не слепящий белый с анимацией прозрачности
+    fill(255, revealAlpha);
+
+    // Размер текста и область — завязаны на радиус сферы,
+    // чтобы текст уверенно помещался внутрь неё
+    const baseSize = radius_ * 0.07; // около 6–8% от радиуса
+    textSize(baseSize);
+
+    const maxTextWidth = radius_ * 1.4;
+    const textHeight = radius_ * 1.2;
+    const textBlock = aboutLines.join("\n");
+    // Рисуем многострочный текст в прямоугольнике,
+    // вписанном внутрь круга сферы
+    text(
+      textBlock,
+      -maxTextWidth / 2,
+      -textHeight / 2,
+      maxTextWidth,
+      textHeight
+    );
+    pop();
+  }
 }
 
 // put the initial positions right
